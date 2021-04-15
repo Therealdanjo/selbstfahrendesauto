@@ -9,10 +9,14 @@ def measure_temp():
         temp = temp[:-3]
         return temp
 
-def starttemperaturecheck():
+def starttemperaturecheck(out=False):
     alreadyplayed = False
     while True:
-        if float(measure_temp()) > 70.0 and not alreadyplayed:
+        temp = measure_temp()
+        if out:
+            print(temp)
+        
+        if float(temp) > 70.0 and not alreadyplayed:
             pygame.mixer.music.load("/home/pi/ObjectDetection/Utils/TemperatureWarning.mp3")
             pygame.mixer.music.play()
             alreadyplayed = True
@@ -20,4 +24,4 @@ def starttemperaturecheck():
         time.sleep(1)
 
 if __name__ == "__main__":
-    starttemperaturecheck()
+    starttemperaturecheck(True)
