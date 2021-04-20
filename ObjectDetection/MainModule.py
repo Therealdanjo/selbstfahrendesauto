@@ -15,10 +15,9 @@ while True:
     success,img = cap.read()
     result, objectInfo = getObjects(img, 0.45, 0.2, True, ['person', 'cat', 'dog', 'bird'])
     for found in objectInfo:
-        for fields in found:
-            if fields == 'person' or fields == 'cat' or fields == 'dog' or fields == 'bird':
-                if not channel.get_busy():
-                    channel.play(sound)
+        if found[1] == 'person' or found[1] == 'cat' or found[1] == 'dog' or found[1] == 'bird':
+            if not channel.get_busy():
+                channel.play(sound)
 
     cv2.imshow("Output", img)
     cv2.waitKey(1)
