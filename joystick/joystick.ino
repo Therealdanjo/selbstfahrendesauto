@@ -46,7 +46,9 @@ void loop() {
   } else if (vzvalue > 1000) {
     Serial.print("iatz vor");
     Serial.print('\n');
-    forward();
+    if (sensorMitte > 10) {       //do brauchets holt no des vom jonni
+      forward();
+    }
   } else {
     stopp();
   }
