@@ -1,19 +1,28 @@
 
  //i galb irgendepes mit tx und rx, keine ahung
 
+int vzport = A7;    //joystick vor zurueck
+int rlprot = A15;   //joystick rechts links
+int vzvalue = 0;
+int rlvalue = 0;
+
+//wlan
 int forwardPin = A8;
 int backwardPin = A9;
 int rightPin = A10;
 int leftPin = A11;
-
-int changemodusPin = A13;
-int mode = 1;
 
 int forwardValue = 0;
 int backwardValue = 0;
 int rightValue = 0;
 int leftValue = 0;
 
+int handyPin = A12;
+int autoPin = A13;
+int joystickPin = A14;
+int mode = 1;
+
+//sensoren
 const int sensorlinksTrigger = 22;
 const int sensorlinksEcho = 23;
 const int sensormitteTrigger = 24;
@@ -22,6 +31,7 @@ const int sensorrechtsTrigger = 26;
 const int sensorrechtsEcho = 27;
 const int sensoruntenTrigger = 28;
 const int sensoruntenEcho = 29;
+
 
 boolean obgas = true;
 
@@ -45,6 +55,13 @@ void setup() {
   pinMode(sensorrechtsEcho, INPUT);
   pinMode(sensoruntenTrigger, OUTPUT);
   pinMode(sensoruntenEcho, INPUT);
+
+  pinMode(handyPin, INPUT);
+  pinMode(autoPin, INPUT);
+  pinMode(joystickPin, INPUT);
+
+  pinMode(rlprot, INPUT);
+  pinMode(vzport, INPUT);
   
   Serial.begin(9600);
     
@@ -65,18 +82,31 @@ void loop() {
   Serial.println(leftValue);
 */
 
+
   if (mode == 1) {
     halbmanual();
   } else if (mode == 2) {
     automatisch();
+  } else if (mode == 3) {
+    joystick();
   } else {
     Serial.println("den modus gebs gornet");
   }
 
-  if (ison(changemodusPin)) {
+
+  //Serial.println(analogRead(autoPin));
+  if (ison(analogRead(autoPin))) {
+    Serial.println("automatikmode");
     mode = 2;
+  } else if (ison(analogRead(joystickPin))){
+    Serial.println("joystick");
+    mode = 3;  
+  } else if (ison(analogRead(handyPin))) {
+    Serial.println("wlan");
+    mode = 1;
   } else {
-    mode = 1;  
+    Serial.println("wlan 2");
+    mode = 1;
   }
 
   delay(500);
@@ -92,6 +122,38 @@ boolean ison(int value) {
   }
   
 }
+
+void joystick() {
+  
+  vzvalue = analogRead(vzport);
+  rlvalue = analogRead(rlprot);
+
+  Serial.print("vor Zurueck = ");
+  Serial.print(vzvalue);
+  Serial.print('\n');
+
+  Serial.print("rechts Links = ");
+  Serial.print(rlvalue);
+  Serial.print('\n');
+  
+  if (rlvalue < 200) {
+    Serial.println("iatz rechts");
+    right();
+  } else if (rlvalue > 1000) {
+    Serial.println("iatz links");
+    left();
+  } else if (vzvalue < 200) {
+    Serial.println("iatz vor");
+    forward();
+  } else if (vzvalue > 1000) {
+    Serial.println("iatz zrug");
+    back();
+  } else {
+    stopp();
+  }
+  
+}
+
 
 void halbmanual () {
   if (ison(leftValue)) {
